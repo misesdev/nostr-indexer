@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./build", // Define a pasta onde os arquivos compilados serão gerados
+    "rootDir": "./", // Define a pasta de origem dos arquivos TypeScript
+    "target": "es6",    // Alvo da compilação (ECMAScript 6, por exemplo)
+    "module": "commonjs" // Módulo do sistema (como CommonJS, ES6, etc.)
+  },
+  "include": [
+    "./*.ts",
+    "./src/**/*" // Inclui todos os arquivos .ts da pasta src
+  ]
+}
+

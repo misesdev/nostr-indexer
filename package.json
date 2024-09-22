@@ -1,0 +1,11 @@
+{
+    "devDependencies": {
+        "@types/node": "^22.5.4",
+        "fs": "^0.0.1-security",
+        "ws": "^8.18.0"
+    },
+    "scripts": {
+        "start": "tsc && node ./build/index.js",
+        "build": "tsc"
+    }
+}
