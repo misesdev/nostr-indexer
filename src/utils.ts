@@ -23,7 +23,7 @@ export const getPubkeys = (event: Event): string[] => {
 
 export const distinctEvent = (events: Event[]) => {
     return events.filter((event, index, self) => {
-        return index == self.findIndex(x => x.pubkey == event.pubkey)
+        return index == self.findIndex(x => x.id == event.id)
     })
 }
 

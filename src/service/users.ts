@@ -1,6 +1,7 @@
 import { RelayPool } from "../modules/RelayPool";
 import { FileSystem } from "../filesytem/disk";
 import { Event } from "../modules/types";
+import { maxFetchEvents } from "../constants";
 
 const defaultProfile = "https://blob.nostroogle.org/files/storage/ec362271f59dbc624ae0c9654/hczhqsKU5okwFDpeASqhNKwYykBGP1ne1QvtGGCR.png";
 
@@ -81,7 +82,7 @@ export const listUsers = async (pool: RelayPool) => {
 
     await fileUsers.clear()
 
-    let skipe = 500, totalUsers = 0
+    let skipe = maxFetchEvents, totalUsers = 0
     for (let i = 0; i <= pubkeys.length; i += skipe) 
     {
         let authors = pubkeys.slice(i, i + skipe)

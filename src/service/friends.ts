@@ -2,6 +2,7 @@ import { RelayPool } from "../modules/RelayPool";
 import { FileSystem } from "../filesytem/disk";
 import { UserFriends } from "../modules/types";
 import { getPubkeys } from "../utils";
+import { maxFetchEvents } from "../constants";
 
 export const listFriends = async (pool: RelayPool) =>
 {
@@ -16,7 +17,7 @@ export const listFriends = async (pool: RelayPool) =>
 
     fileFriends.clear()
 
-    let skipe = 300, countUsers = 0
+    let skipe = maxFetchEvents, countUsers = 0
     for(let i = 0; i < pubkeys.length; i += skipe) 
     {
         let events = await pool.fechEvents({
@@ -39,13 +40,13 @@ export const listFriends = async (pool: RelayPool) =>
                     }
 
                     fileFriends.writeLine(JSON.stringify(user))
-                    console.log("npubs:", npubs.length)
+                    console.log("npubs.......:", npubs.length)
                     countUsers++;
                 } catch {}
             })
         }
     }
 
-    console.log("loaded friends:", countUsers);
-    console.log("pubkeys:", pubkeys.length);
+    console.log("loaded friends..:", countUsers);
+    console.log("pubkeys count...:", pubkeys.length);
 }

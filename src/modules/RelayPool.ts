@@ -6,7 +6,7 @@ export class RelayPool {
 
     private relays: string[];
     public websockets: WebSocket[];
-    public timeout: number = 1500;
+    public timeout: number = 1800;
     private subscription: string = "3da9794398579582309458d6f1498";
 
     constructor(relays: string[]) {
@@ -116,3 +116,5 @@ export class RelayPool {
         return null;
     }
 }
+
+

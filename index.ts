@@ -4,22 +4,33 @@ import { listPubkeys } from "./src/service/pubkeys";
 import { listUsers } from "./src/service/users";
 import { loadData } from "./src/service/up-data";
 import { listFriends } from "./src/service/friends";
+import { configDotenv } from "dotenv";
+
+configDotenv()
 
 const author: string = "55472e9c01f37a35f6032b9b78dade386e6e4c57d80fd1d0646abb39280e5e27";
 
 const main = async () => {
 
-    const relayPool = new RelayPool(relays)
+    // const relayPool = new RelayPool(relays)
 
-    await relayPool.connect();
+    // await relayPool.connect();
 
-    await listPubkeys(relayPool, author, true) 
+    // await listPubkeys({ 
+    //     pool: relayPool, 
+    //     author: author, 
+    //     listRelays: true
+    // }) 
 
-    await listUsers(relayPool)
+    // await listUsers(relayPool)
 
-    await listFriends(relayPool)
+    // await listFriends(relayPool)
 
-    await loadData()
+    await loadData({ 
+        users: false, 
+        friends: false, 
+        relays: true 
+    })
 }
 
 main();
