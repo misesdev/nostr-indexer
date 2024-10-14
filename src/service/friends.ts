@@ -15,7 +15,7 @@ export const listFriends = async (pool: RelayPool) =>
         return true
     })
 
-    fileFriends.clear()
+    await fileFriends.clear()
 
     let skipe = maxFetchEvents, countUsers = 0
     for(let i = 0; i < pubkeys.length; i += skipe) 
@@ -40,7 +40,7 @@ export const listFriends = async (pool: RelayPool) =>
                     }
 
                     fileFriends.writeLine(JSON.stringify(user))
-                    console.log("npubs.......:", npubs.length)
+                    console.log("friends npubs..:", npubs.length)
                     countUsers++;
                 } catch {}
             })

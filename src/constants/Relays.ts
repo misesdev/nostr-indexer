@@ -44,5 +44,41 @@ export const relays = [
     "wss://relay.lnau.net/", // get from users reports
     "wss://wot.stubby.dev", // // get from users reports
     "wss://xmr.rocks/", // get from users reports
-    "wss://wot.siamstr.com" // get from users reports 
+    "wss://wot.siamstr.com", // get from users reports
+
+    "wss://eden.nostr.land",
+    "wss://nostr.oxtr.dev",
+    "wss://relay.yarke.eu",
+    "wss://relay.momostr.pink",
+    "wss://purplerelay.com",
+    "wss://relayer.fiatjaf.com",
+    "wss://relay.nimo.cash",
+    "wss://njump.me",
+    "wss://relay.exit.pub",
+    "wss://relay.nostr.org",
+    "wss://relay.hawties.xyz",
+    "wss://relay.nostrich.land",
+    "wss://rss.nos.social",
+    "wss://nostr.zkid.social",
+    "wss://us.nostr.land",
+    "wss://nostr.fbxl.net",
+    "wss://global.relay.red",
+    "wss://relay.nostrified.org",
+    "wss://relay.nostrss.re",
+    "wss://nostr.vulpem.com",
+    "wss://relay.haths.cc",
+    "wss://nostr.filmweb.pl",
+    "wss://nostr.thank.eu",
+    "wss://nostr.dncn.xyz",
+    "wss://nostr.petrkr.net",
+    "wss://live.snort.social",
+    "wss://relay.nostr.express",
+    "wss://nostr.utxo.lol",
+    "wss://relay.zeh.app",
+    "wss://nostr.arguflow.gg",
+    "wss://nostr.sept.ml",
+    "wss://nostr.rocket-tech.net",
+    "wss://nostr.globals.fans",
+    "wss://nostr.bitcoinist.org",
+    "wss://relay.nostrid.com"
 ] 

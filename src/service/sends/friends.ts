@@ -1,5 +1,6 @@
 import { FileSystem } from "../../filesytem/disk"
 import { User, UserFriends } from "../../modules/types";
+import { requestEngine } from "../request";
 
 export const sendFriends = async (fileFriends: FileSystem) => {
 
@@ -36,29 +37,17 @@ export const sendFriends = async (fileFriends: FileSystem) => {
                 {
                     user.friends = friends.slice(i, i + interval)
 
-                    let response = await fetch(`${process.env.API_ENGINE_URL}/add_friends`, {
-                        method: "post",
-                        body: JSON.stringify(user)
-                    })
-
-                    let data = await response.json()
+                    let data = await requestEngine("/add_friends", user);
                 
                     console.log("pubkey:", user.pubkey)
-                    console.log("-> response:", data.message)
+                    console.log("-> response:", data?.message)
                 }
             } 
             catch {  }
         return true
     })
 
-    let response = await fetch(`${process.env.API_ENGINE_URL}/save`, {
-        method: "post",
-        body: JSON.stringify({
-            scope: "friends"
-        })
-    })
-
-    let data = await response.json()
+    let data = await requestEngine("/save", { scope: "friends" });
 
     console.log(data?.message)
 }

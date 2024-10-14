@@ -17,13 +17,13 @@ export const listPubkeys = async ({ pool, author, listRelays = false }: Props) =
     const filePubkeys = new FileSystem("./data/pubkeys.db")
     const fileRelays = new FileSystem("./data/relays.db")
 
-    filePubkeys.readLines(async (pubkey) => {
+    await filePubkeys.readLines(async (pubkey) => {
         pubkeys.push(pubkey)
         return true
     })
 
     if(listRelays) {
-        fileRelays.readLines(async (relay) => {
+        await fileRelays.readLines(async (relay) => {
             relays.push(relay)
             return true
         })
@@ -68,10 +68,13 @@ export const listPubkeys = async ({ pool, author, listRelays = false }: Props) =
                     
                     for(let relay in eventRelays) 
                     {
-                        let relayDomain = getRelayDomain(relay)
+                        try
+                        {
+                            let relayDomain = getRelayDomain(relay)
 
-                        if(!relays.includes(relayDomain))
-                            relays.push(relayDomain)
+                            if(!relays.includes(relayDomain))
+                                relays.push(relayDomain)
+                        } catch { }
                     }
                 } 
                 catch { }
@@ -97,6 +100,6 @@ export const listPubkeys = async ({ pool, author, listRelays = false }: Props) =
 
         relays.forEach(relay => fileRelays.writeLine(relay))
 
-        console.log('relays:', relays.length)
+        console.log('relays..:', relays.length)
     }
 }

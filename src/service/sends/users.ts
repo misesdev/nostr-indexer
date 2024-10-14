@@ -1,34 +1,20 @@
 import { FileSystem } from "../../filesytem/disk"
+import { requestEngine } from "../request"
 
 export const sendUsers = async (fileUsers: FileSystem) => {
     await fileUsers.readLines(async (line) => {
         try 
         {
-            let response = await fetch(`${process.env.API_ENGINE_URL}/add_user`, {
-                method: "post",
-                body: line,
-            })
-            
-            let data = await response.json()
-            
-            console.log(data.message)
-
-            if(!response.ok) 
-                console.log(data)
+            let data = await requestEngine("/add_user", JSON.parse(line))
+                        
+            console.log(data?.message)
         } 
         catch {  }
 
         return true
     })
 
-    let response = await fetch(`${process.env.API_ENGINE_URL}/save`, {
-        method: "post",
-        body: JSON.stringify({
-            scope: "users"
-        })
-    })
-
-    let data = await response.json()
+    let data = await requestEngine("/save", { scope: "users" })
 
     console.log(data?.message)
 }

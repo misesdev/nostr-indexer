@@ -6,10 +6,11 @@ export class RelayPool {
 
     private relays: string[];
     public websockets: WebSocket[];
-    public timeout: number = 1800;
-    private subscription: string = "3da9794398579582309458d6f1498";
+    public timeout: number = 1000;
+    private subscription: string = "3da9794398579582309458";
 
-    constructor(relays: string[]) {
+    constructor(relays: string[]) 
+    {
         if(relays.length < 1)
             throw Error("expected relays");
 
@@ -22,7 +23,7 @@ export class RelayPool {
         return new Promise((resolve, reject) => {
             let websock = new WebSocket(relay);
             websock.on("open", () => resolve(websock));
-            websock.on("close", () => reject(`not connetd: ${relay}`))
+            websock.on("close", () => reject(`disconnected: ${relay}`))
             websock.on("error", () => reject(`not connetd: ${relay}`))
 
             setTimeout(() => {
@@ -46,6 +47,36 @@ export class RelayPool {
         this.websockets = this.websockets.filter(socket => socket != null)
 
         console.log("connected")
+    }
+
+    private async disconectRelay(websocket: WebSocket): Promise<void> {
+        new Promise<void>((resolve) => {
+            let timeout: any
+            websocket.send(`[\"CLOSE\", ${this.subscription}]`)
+
+            const handleMessage = (message: any) => {
+                let data = JSON.parse(message.toString()); 
+
+                if(data[0] == "EOSE") {
+                    websocket.removeListener("message", handleMessage)
+                    clearTimeout(timeout)
+                    resolve()
+                }
+                
+                websocket.on("message", handleMessage);
+
+                timeout = setTimeout(() => {
+                    websocket.removeListener("message", handleMessage)
+                    resolve()
+                }, this.timeout)
+            }
+        })
+    }
+
+    public async disconect() {
+        let promises = this.websockets.map(websocket => this.disconectRelay(websocket))
+
+        await Promise.all(promises)
     }
 
     private async fetchEventRelay(websocket: WebSocket, filter: Filter): Promise<Event[]> 

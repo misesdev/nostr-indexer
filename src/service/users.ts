@@ -3,8 +3,6 @@ import { FileSystem } from "../filesytem/disk";
 import { Event } from "../modules/types";
 import { maxFetchEvents } from "../constants";
 
-const defaultProfile = "https://blob.nostroogle.org/files/storage/ec362271f59dbc624ae0c9654/hczhqsKU5okwFDpeASqhNKwYykBGP1ne1QvtGGCR.png";
-
 type User = {
     name: string,
     displayName: string,
@@ -38,7 +36,7 @@ const sanitiseUser = (event: Event): User => {
         user["profile"] = user["picture"]
 
     if(!user["picture"]) 
-        user["profile"] = defaultProfile
+        user["profile"] = ""
 
     if(!user["about"])
         user["about"] = ""
@@ -50,7 +48,9 @@ const sanitiseUser = (event: Event): User => {
         user["displayName"] = `${user["displayName"].substring(0, 41)}...`
 
     if(user["profile"].length > 149)
-        user["profile"] = defaultProfile
+        user["profile"] = "" //defaultProfile
+
+    if(!user["about"]) user["about"] = ""
 
     // if(user["about"] && user["about"].length > 180)
     //     user["about"] = `${user["about"].substring(0, 176)}...`
@@ -60,7 +60,7 @@ const sanitiseUser = (event: Event): User => {
 
     user["pubkey"] = event.pubkey
 
-    for(let property in user) {
+    for (let property in user) {
         if(!properties.includes(property))
             delete user[property]
     }
@@ -82,6 +82,8 @@ export const listUsers = async (pool: RelayPool) => {
 
     await fileUsers.clear()
 
+    console.log("total pubkey:", pubkeys.length)
+
     let skipe = maxFetchEvents, totalUsers = 0
     for (let i = 0; i <= pubkeys.length; i += skipe) 
     {
@@ -93,7 +95,7 @@ export const listUsers = async (pool: RelayPool) => {
             kinds: [0]
         })
 
-        console.log("events:", events.length);
+        console.log("user events..:", events.length);
 
         events.forEach(event => {
             try {
