@@ -2,6 +2,7 @@ import { RelayPool } from "../modules/RelayPool";
 import { FileSystem } from "../filesytem/disk";
 import { Event } from "../modules/types";
 import { maxFetchEvents } from "../constants";
+import { requestEngine } from "./request";
 
 type User = {
     name: string,
@@ -48,15 +49,9 @@ const sanitiseUser = (event: Event): User => {
         user["displayName"] = `${user["displayName"].substring(0, 41)}...`
 
     if(user["profile"].length > 149)
-        user["profile"] = "" //defaultProfile
+        user["profile"] = "" 
 
     if(!user["about"]) user["about"] = ""
-
-    // if(user["about"] && user["about"].length > 180)
-    //     user["about"] = `${user["about"].substring(0, 176)}...`
-
-    // if(user["about"].length >= 178)
-    //     user["about"] = user["about"].replace(/\\u[0-9A-Fa-f]*\.{3}$/, '...')
 
     user["pubkey"] = event.pubkey
 
@@ -72,15 +67,12 @@ export const listUsers = async (pool: RelayPool) => {
     
     const pubkeys: string[] = []
 
-    const fileUsers = new FileSystem("./data/users.db");
     const filePubkeys = new FileSystem("./data/pubkeys.db");
 
     await filePubkeys.readLines(async (line) => { 
-        pubkeys.push(line) 
+        if(line.length == 64) pubkeys.push(line) 
         return true;
     })
-
-    await fileUsers.clear()
 
     console.log("total pubkey:", pubkeys.length)
 
@@ -95,20 +87,28 @@ export const listUsers = async (pool: RelayPool) => {
             kinds: [0]
         })
 
-        console.log("user events..:", events.length);
+        for(let i = 0; i < events.length; i++) 
+        {
+            let event = events[i]
 
-        events.forEach(event => {
-            try {
-                let user = sanitiseUser(event)
+            try 
+            {
+                let data = await requestEngine("/add_user", sanitiseUser(event))
 
-                fileUsers.writeLine(JSON.stringify(user))
+                console.log(data?.message)
 
                 totalUsers++;
             } catch {}
-        });
+        }
     }
 
     console.log("found users:", totalUsers)
+
+    let response = await requestEngine("/save", {
+        scope: "users"
+    })
+
+    console.log(response?.message)    
 }
 
 

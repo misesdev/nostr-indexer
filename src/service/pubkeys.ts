@@ -2,32 +2,23 @@ import { maxFetchEvents, maxUsersPubkeys } from "../constants";
 import { FileSystem } from "../filesytem/disk";
 import { RelayPool } from "../modules/RelayPool";
 import { distinctPubkeys, getPubkeys } from "../utils";
-import { getRelayDomain } from "./sends/relays";
+import { requestEngine } from "./request";
+import { getRelayDomain } from "../utils";
 
 type Props = {
     pool: RelayPool,
-    author: string, 
-    listRelays: boolean
+    author: string 
 }
 
-export const listPubkeys = async ({ pool, author, listRelays = false }: Props) => {
+export const listPubkeys = async ({ pool, author }: Props) => {
     
-    var relays: string[] = []
     var pubkeys: string[] = []
     const filePubkeys = new FileSystem("./data/pubkeys.db")
-    const fileRelays = new FileSystem("./data/relays.db")
 
     await filePubkeys.readLines(async (pubkey) => {
         pubkeys.push(pubkey)
         return true
     })
-
-    if(listRelays) {
-        await fileRelays.readLines(async (relay) => {
-            relays.push(relay)
-            return true
-        })
-    }
 
     if(pubkeys.length <= 0) {
         const events = await pool.fechEvents({
@@ -52,7 +43,9 @@ export const listPubkeys = async ({ pool, author, listRelays = false }: Props) =
             limit: skipe
         })
 
-        events.forEach(event => {
+        for(let i = 0; i < events.length; i++)
+        {
+            let event = events[i]
             let npubs = getPubkeys(event)
             console.log("npubs...:", npubs.length)
 
@@ -61,25 +54,22 @@ export const listPubkeys = async ({ pool, author, listRelays = false }: Props) =
                     pubkeys.push(pubkey)
             })
 
-            if(listRelays) 
-            {
-                try {
-                    let eventRelays = JSON.parse(event.content);
-                    
-                    for(let relay in eventRelays) 
-                    {
-                        try
-                        {
-                            let relayDomain = getRelayDomain(relay)
+            try {
+                let eventRelays = JSON.parse(event.content);
+                
+                for(let relay in eventRelays) 
+                {
+                    let relayDomain = getRelayDomain(relay)
 
-                            if(!relays.includes(relayDomain))
-                                relays.push(relayDomain)
-                        } catch { }
-                    }
-                } 
-                catch { }
-            }
-        })
+                    let response = await requestEngine("/add_relay", { 
+                        relay: relayDomain
+                    })
+
+                    console.log(response?.message)
+                }
+            } 
+            catch { }
+        }
 
         if(pubkeys.length > maxPubkeys) break
     }
@@ -90,16 +80,11 @@ export const listPubkeys = async ({ pool, author, listRelays = false }: Props) =
 
     pubkeys.forEach(pubkey => filePubkeys.writeLine(pubkey))
 
-    console.log("users pubkeys:", pubkeys.length)    
+    console.log("users pubkeys:", pubkeys.length)   
 
-    if(listRelays) 
-    {
-        await fileRelays.clear()
+    let response = await requestEngine("/save", {
+        scope: "relays"
+    })
 
-        relays = distinctPubkeys(relays)
-
-        relays.forEach(relay => fileRelays.writeLine(relay))
-
-        console.log('relays..:', relays.length)
-    }
+    console.log(response?.message)
 }

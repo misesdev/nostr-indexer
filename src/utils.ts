@@ -33,4 +33,14 @@ export const distinctPubkeys = (pubkeys: string[]) => {
     })
 }
 
+export const getRelayDomain = (relay: string) => {
+    
+    const url = new URL(relay)
+
+    if(!url.hostname.includes(".") || url.hostname.length <= 2)
+        throw Error("Invalid relay domain")
+
+    return `${url.protocol}//${url.hostname}`
+}
+
 

@@ -17,7 +17,7 @@ export type Filter = {
 
 export type UserFriends = {
     pubkey: string,
-    friends: number[]
+    friends: string[]
 }
 
 export type User = {

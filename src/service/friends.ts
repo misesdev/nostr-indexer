@@ -1,52 +1,55 @@
 import { RelayPool } from "../modules/RelayPool";
-import { FileSystem } from "../filesytem/disk";
 import { UserFriends } from "../modules/types";
+import { FileSystem } from "../filesytem/disk";
 import { getPubkeys } from "../utils";
+import { requestEngine } from "./request";
 import { maxFetchEvents } from "../constants";
 
 export const listFriends = async (pool: RelayPool) =>
 {
     const pubkeys: string[] = []
-    const fileFriends = new FileSystem("./data/friends.db")
-    const filePubkeys = new FileSystem("./data/pubkeys.db")
 
-    await filePubkeys.readLines(async (pubkey) => {
-        pubkeys.push(pubkey)
-        return true
+    const filePubkeys = new FileSystem("./data/pubkeys.db");
+
+    await filePubkeys.readLines(async (line) => { 
+        if(line.length == 64) pubkeys.push(line) 
+        return true;
     })
 
-    await fileFriends.clear()
-
-    let skipe = maxFetchEvents, countUsers = 0
-    for(let i = 0; i < pubkeys.length; i += skipe) 
+    let skipe = maxFetchEvents, countFriends = 0
+    for (let i = 0; i <= pubkeys.length; i += skipe) 
     {
+        let authors = pubkeys.slice(i, i + skipe)
+    
         let events = await pool.fechEvents({
-            authors: pubkeys.slice(i, i + skipe),
+            authors: authors,
             limit: skipe,
             kinds: [3]
         })
 
-        if(events.length) 
+        for(let i = 0; i < events.length; i++)
         {
-            events.forEach(event => {
-                try 
-                {
-                    let npubs = getPubkeys(event)
-                    let friends = npubs.map(npub => pubkeys.indexOf(npub))
+            try 
+            {
+                let user: UserFriends = {
+                    pubkey: events[i].pubkey,
+                    friends: getPubkeys(events[i])
+                }
 
-                    let user: UserFriends = {
-                        pubkey: event.pubkey,
-                        friends: friends
-                    }
+                let response = await requestEngine("/add_friends", user)
 
-                    fileFriends.writeLine(JSON.stringify(user))
-                    console.log("friends npubs..:", npubs.length)
-                    countUsers++;
-                } catch {}
-            })
+                console.log(response?.message)
+
+                countFriends++;
+            } catch {}
         }
     }
 
-    console.log("loaded friends..:", countUsers);
-    console.log("pubkeys count...:", pubkeys.length);
+    console.log("loaded friends..:", countFriends);
+
+    let response = await requestEngine("/save", {
+        scope: "friends"
+    })
+
+    console.log(response?.message)
 }

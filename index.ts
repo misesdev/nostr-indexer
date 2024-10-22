@@ -2,7 +2,6 @@ import { RelayPool } from "./src/modules/RelayPool";
 import { relays } from "./src/constants/Relays";
 import { listPubkeys } from "./src/service/pubkeys";
 import { listUsers } from "./src/service/users";
-import { loadData } from "./src/service/up-data";
 import { listFriends } from "./src/service/friends";
 import { configDotenv } from "dotenv";
 
@@ -18,21 +17,14 @@ const main = async () => {
 
     await listPubkeys({ 
         pool: relayPool, 
-        author: author, 
-        listRelays: true
+        author: author 
     }) 
 
     await listUsers(relayPool)
 
     await listFriends(relayPool)
 
-    await relayPool.disconect()
-
-    await loadData({ 
-        users: true,  
-        friends: true, 
-        relays: true 
-    })
+    // await relayPool.disconect()
 
     return;
 }
