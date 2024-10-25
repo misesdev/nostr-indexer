@@ -19,7 +19,7 @@ const sanitiseUser = (event: Event): User => {
     let properties = ["name", "displayName", "profile", "about", "pubkey"]
 
     if((!user["name"] && !user["display_name"]) || user["deleted"]) 
-        throw new Error("invalid user")
+        throw new Error("invalid user or deleted")
 
     if(!user["name"] && user["display_name"])
         user["name"] = user["display_name"]
@@ -30,7 +30,7 @@ const sanitiseUser = (event: Event): User => {
     if(!user['displayName']) 
         user["displayName"] = user["display_name"]
 
-    if(user["name"].length <= 3 && user["displayName"].length <= 3)
+    if(user["name"].length <= 1 && user["displayName"].length <= 1)
         throw new Error("invalid username")
 
     if(!user["profile"] && user["picture"]) 
@@ -79,26 +79,25 @@ export const listUsers = async (pool: RelayPool) => {
     let skipe = maxFetchEvents, totalUsers = 0
     for (let i = 0; i <= pubkeys.length; i += skipe) 
     {
-        let authors = pubkeys.slice(i, i + skipe)
-
         let events = await pool.fechEvents({
-            authors: authors,
+            authors: pubkeys.slice(i, i + skipe),
             limit: skipe,
             kinds: [0]
         })
 
         for(let i = 0; i < events.length; i++) 
         {
-            let event = events[i]
-
             try 
             {
-                let data = await requestEngine("/add_user", sanitiseUser(event))
+                let response = await requestEngine("/add_user", sanitiseUser(events[i]))
 
-                console.log(data?.message)
+                console.log(response?.message)
 
                 totalUsers++;
-            } catch {}
+            } 
+            catch(error) {
+                console.error(error)
+            }
         }
     }
 
