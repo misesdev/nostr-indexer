@@ -15,12 +15,12 @@ const main = async () => {
 
     await relayPool.connect();
 
-    await listPubkeys({ 
-        pool: relayPool, 
-        author: author 
-    }) 
+    // await listPubkeys({ 
+    //     pool: relayPool, 
+    //     author: author 
+    // }) 
 
-    await listUsers(relayPool)
+    // await listUsers(relayPool)
 
     await listFriends(relayPool)
 
