@@ -41,10 +41,7 @@ export const listFriends = async (pool: RelayPool) =>
                 console.log(response?.message)
 
                 countFriends++;
-            } 
-            catch(error) {
-                console.error(error)
-            }
+            } catch {}
         }
     }
 

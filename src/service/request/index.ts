@@ -7,6 +7,8 @@ export const requestEngine = async (endpoint: string, data: any) => {
         body: JSON.stringify(data)
     })
 
-    return await response.json()
+    if(response.ok) return await response.json()
+
+    throw Error("error in request");
 }
 
