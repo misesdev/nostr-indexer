@@ -55,18 +55,18 @@ export const listPubkeys = async ({ pool, author }: Props) => {
             })
 
             try {
-                let eventRelays = JSON.parse(event.content);
-                
-                for(let relay in eventRelays) 
-                {
-                    let relayDomain = getRelayDomain(relay)
+                // let eventRelays = JSON.parse(event.content);
+                // 
+                // for(let relay in eventRelays) 
+                // {
+                //     let relayDomain = getRelayDomain(relay)
 
-                    let response = await requestEngine("/add_relay", { 
-                        relay: relayDomain
-                    })
+                //     let response = await requestEngine("/add_relay", { 
+                //         relay: relayDomain
+                //     })
 
-                    console.log(response?.message)
-                }
+                //     console.log(response?.message)
+                // }
             } 
             catch { }
         }

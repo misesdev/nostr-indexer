@@ -87,6 +87,8 @@ export const listUsers = async (pool: RelayPool) => {
             kinds: [0]
         })
 
+        console.log("profiles:", events.length)
+
         for(let i = 0; i < events.length; i++) 
         {
             let event = events[i]
