@@ -1,6 +1,7 @@
 {
     "devDependencies": {
         "@types/node": "^22.5.4",
+        "@types/pg": "^8.15.5",
         "fs": "^0.0.1-security",
         "ws": "^8.18.0"
     },
@@ -9,6 +10,7 @@
         "build": "tsc"
     },
     "dependencies": {
-        "dotenv": "^16.4.5"
+        "dotenv": "^16.4.5",
+        "pg": "^8.16.3"
     }
 }

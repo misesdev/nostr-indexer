@@ -1,5 +1,5 @@
 import { RelayPool } from "./src/modules/RelayPool";
-import { relays } from "./src/constants/Relays";
+import AppSettings from "./src/settings/AppSettings";
 import { listPubkeys } from "./src/service/pubkeys";
 import { listUsers } from "./src/service/users";
 import { listFriends } from "./src/service/friends";
@@ -7,17 +7,19 @@ import { configDotenv } from "dotenv";
 
 configDotenv()
 
-const author: string = "55472e9c01f37a35f6032b9b78dade386e6e4c57d80fd1d0646abb39280e5e27";
-
 const main = async () => {
 
-    const relayPool = new RelayPool(relays)
+    const _appSettings = new AppSettings()
+
+    const settings = _appSettings.get()
+
+    const relayPool = new RelayPool(settings.relays)
 
     await relayPool.connect();
 
     await listPubkeys({ 
         pool: relayPool, 
-        author: author 
+        author: settings.initial_user 
     }) 
 
     await listUsers(relayPool)
@@ -25,6 +27,12 @@ const main = async () => {
     await listFriends(relayPool)
 
     await relayPool.disconect()
+
+    // increment the page of pubkeys to the next execution
+    settings.current_page += 1
+   
+    // save the settings
+    _appSettings.set(settings)
 
     return;
 }

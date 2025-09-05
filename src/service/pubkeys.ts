@@ -1,5 +1,4 @@
 import { maxFetchEvents, maxUsersPubkeys } from "../constants";
-import { FileSystem } from "../filesytem/disk";
 import { RelayPool } from "../modules/RelayPool";
 import { distinctPubkeys, getPubkeys } from "../utils";
 import { requestEngine } from "./request";
