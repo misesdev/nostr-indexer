@@ -1,8 +1,5 @@
 import { RelayPool } from "../modules/RelayPool";
-import { FileSystem } from "../filesytem/disk";
-import { Event } from "../modules/types";
-import { maxFetchEvents } from "../constants";
-import { requestEngine } from "./request";
+import { NostrEvent } from "../modules/types/NostrEvent";
 
 type User = {
     name: string,
@@ -12,7 +9,7 @@ type User = {
     pubkey: string
 }
 
-const sanitiseUser = (event: Event): User => {
+const sanitiseUser = (event: NostrEvent): User => {
 
     let user : User = JSON.parse(event.content)
 
@@ -65,52 +62,52 @@ const sanitiseUser = (event: Event): User => {
 
 export const listUsers = async (pool: RelayPool) => {
     
-    const pubkeys: string[] = []
+    // const pubkeys: string[] = []
 
-    const filePubkeys = new FileSystem("./data/pubkeys.db");
+    // const filePubkeys = new FileSystem("./data/pubkeys.db");
 
-    await filePubkeys.readLines(async (line) => { 
-        if(line.length == 64) pubkeys.push(line) 
-        return true;
-    })
+    // await filePubkeys.readLines(async (line) => { 
+    //     if(line.length == 64) pubkeys.push(line) 
+    //     return true;
+    // })
 
-    console.log("total pubkey:", pubkeys.length)
+    // console.log("total pubkey:", pubkeys.length)
 
-    let skipe = maxFetchEvents, totalUsers = 0
-    for (let i = 0; i <= pubkeys.length; i += skipe) 
-    {
-        let authors = pubkeys.slice(i, i + skipe)
+    // let skipe = maxFetchEvents, totalUsers = 0
+    // for (let i = 0; i <= pubkeys.length; i += skipe) 
+    // {
+    //     let authors = pubkeys.slice(i, i + skipe)
 
-        let events = await pool.fechEvents({
-            authors: authors,
-            limit: skipe,
-            kinds: [0]
-        })
+    //     let events = await pool.fechEvents({
+    //         authors: authors,
+    //         limit: skipe,
+    //         kinds: [0]
+    //     })
 
-        console.log("profiles:", events.length)
+    //     console.log("profiles:", events.length)
 
-        for(let i = 0; i < events.length; i++) 
-        {
-            let event = events[i]
+    //     for(let i = 0; i < events.length; i++) 
+    //     {
+    //         let event = events[i]
 
-            try 
-            {
-                let data = await requestEngine("/add_user", sanitiseUser(event))
+    //         try 
+    //         {
+    //             let data = await requestEngine("/add_user", sanitiseUser(event))
 
-                console.log(data?.message)
+    //             console.log(data?.message)
 
-                totalUsers++;
-            } catch {}
-        }
-    }
+    //             totalUsers++;
+    //         } catch {}
+    //     }
+    // }
 
-    console.log("found users:", totalUsers)
+    // console.log("found users:", totalUsers)
 
-    let response = await requestEngine("/save", {
-        scope: "users"
-    })
+    // let response = await requestEngine("/save", {
+    //     scope: "users"
+    // })
 
-    console.log(response?.message)    
+    // console.log(response?.message)    
 }
 
 

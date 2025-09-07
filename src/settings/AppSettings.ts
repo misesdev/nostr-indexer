@@ -3,21 +3,17 @@ import { Settings } from "./types";
 
 class AppSettings 
 {
-    private readonly _file: FDisk
-    constructor()
+    public static get(): Settings
     {
-        this._file = new FDisk("./settings.json")         
-    }
-
-    public get(): Settings
-    {
-        const json = this._file.readJson()
+        let file = new FDisk("./settings.json")
+        const json = file.readJson()
         return JSON.parse(json) as Settings
     }
 
-    public set(settings: Settings): void
+    public static save(settings: Settings): void
     {
-        this._file.writeJson(settings)
+        let file = new FDisk("./settings.json")
+        file.writeJson(settings)
     }
 }
 

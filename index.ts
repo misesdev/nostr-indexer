@@ -1,43 +1,32 @@
 import { RelayPool } from "./src/modules/RelayPool";
+import PubkeyService from "./src/service/PubkeyService";
 import AppSettings from "./src/settings/AppSettings";
-import { listPubkeys } from "./src/service/pubkeys";
-import { listUsers } from "./src/service/users";
-import { listFriends } from "./src/service/friends";
+// import { listUsers } from "./src/service/users";
+// import { listFriends } from "./src/service/friends";
 import { configDotenv } from "dotenv";
 
 configDotenv()
 
 const main = async () => {
 
-    const _appSettings = new AppSettings()
+    const settings = AppSettings.get()
 
-    const settings = _appSettings.get()
+    const relayPool = await RelayPool.getInstance(settings)
 
-    const relayPool = new RelayPool(settings.relays)
+    // Carrega as chaves publicas
+    const pubkeyService = new PubkeyService(settings)
+    await pubkeyService.loadPubkeys(relayPool)
 
-    await relayPool.connect();
+    // await listUsers(relayPool)
 
-    await listPubkeys({ 
-        pool: relayPool, 
-        author: settings.initial_user 
-    }) 
-
-    await listUsers(relayPool)
-
-    await listFriends(relayPool)
+    // await listFriends(relayPool)
 
     await relayPool.disconect()
 
-    // increment the page of pubkeys to the next execution
-    settings.current_page += 1
-   
-    // save the settings
-    _appSettings.set(settings)
-
-    return;
+    process.exit(0)
 }
 
-main();
+main()
 
 
 

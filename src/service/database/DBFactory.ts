@@ -1,16 +1,16 @@
-import { Client } from "pg"
+import { Pool } from "pg"
 
-class BBFactory
+class DBFactory
 {
-    private readonly _db: Client;
+    private readonly _db: Pool
     constructor() 
     {
-        this._db = new Client({
+        this._db = new Pool({
             host: process.env.DB_HOST,    
             port: parseInt(process.env.DB_PORT??"5432"),          
-            user: process.env.DB_USER,  
+            user: process.env.DB_USERNAME,  
             password: process.env.DB_PASSWORD,
-            database: process.env.DB_NAME
+            database: process.env.DB_DATABASE
         })
     }
 
@@ -18,9 +18,7 @@ class BBFactory
     {
         try 
         {
-            await this._db.connect()
             const result = await this._db.query<Entity>(query, params)
-            await this._db.end()
             return result.rows
         } catch(ex) {
             console.log(ex)
@@ -30,14 +28,13 @@ class BBFactory
 
     public async exec(query: string, params: any[]): Promise<void>
     {
-        try {
-            await this._db.connect()
+        try
+        {
             await this._db.query(query, params)
-            await this._db.end()
         } catch(ex) {
             console.log(ex)
         }
     }
 }
 
-export default BBFactory
+export default DBFactory

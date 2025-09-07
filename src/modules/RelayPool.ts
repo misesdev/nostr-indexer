@@ -1,9 +1,12 @@
 import { WebSocket } from "ws"
-import { Event, Filter } from "./types"
 import { distinctEvent } from "../utils";
+import { NostrFilter } from "./types/NostrFilter";
+import { Settings } from "../settings/types";
+import DBRelays from "../service/database/DBRelays";
+import { NostrEvent } from "./types/NostrEvent";
 
-export class RelayPool {
-
+export class RelayPool 
+{
     private relays: string[];
     public websockets: WebSocket[];
     public timeout: number = 1800;
@@ -79,7 +82,7 @@ export class RelayPool {
         await Promise.all(promises)
     }
 
-    private async fetchEventRelay(websocket: WebSocket, filter: Filter): Promise<Event[]> 
+    private async fetchEventRelay(websocket: WebSocket, filter: NostrFilter): Promise<Event[]> 
     {
         return new Promise((resolve) => {
             let timeout: any;
@@ -118,7 +121,7 @@ export class RelayPool {
         });
     }
 
-    public async fechEvents(filter: Filter): Promise<Event[]> 
+    public async fechEvents(filter: NostrFilter): Promise<NostrEvent[]> 
     {
         let eventPromises = this.websockets.map(async (websocket) => { 
             return this.fetchEventRelay(websocket, filter).catch((error:string) => {
@@ -134,17 +137,31 @@ export class RelayPool {
         return distinctEvent(events)
     }
 
-    public async fechUser(pubkey: string): Promise<Event> 
+    public async fechUser(pubkey: string): Promise<NostrEvent> 
     {
         let events = await this.fechEvents({
             kinds: [0],
             authors: [pubkey],
             limit: 1
-        });
+        })
+        if(events.length > 0) return events[0]
+        return null
+    }
 
-        if(events.length > 0) return events[0];
-
-        return null;
+    public static async getInstance(settings: Settings): Promise<RelayPool>
+    {       
+        let relays: string[] = settings.relays
+        if(settings.current_page >= 10) 
+        {
+            let dbRelays = new DBRelays()
+            relays = (await dbRelays.list(settings.relay_page, settings.relays_per_page))
+                .map(r => r.url)
+            // settings.relay_page += 1
+            // AppSettings.save(settings)
+        }
+        const relayPool = new RelayPool(relays)
+        await relayPool.connect()
+        return relayPool
     }
 }
 

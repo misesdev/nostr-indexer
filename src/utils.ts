@@ -1,6 +1,6 @@
-import { Event } from "./modules/types"
+import { NostrEvent } from "./modules/types/NostrEvent";
 
-export const getPubkeys = (event: Event): string[] => {
+export const getPubkeys = (event: NostrEvent): string[] => {
     let pubkeys = event.tags.map((tag: any) => { 
         // if not have a value
         if(!!!tag[1]) return null;
@@ -17,13 +17,13 @@ export const getPubkeys = (event: Event): string[] => {
     return pubkeys.filter((f: string) => f != null)
 }
 
-export const distinctEvent = (events: Event[]) => {
+export const distinctEvent = (events: NostrEvent[]) => {
     return events.filter((event, index, self) => {
         return index == self.findIndex(x => x.id == event.id)
     })
 }
 
-export const distinctPubkeys = (pubkeys: string[]) => {
+export const distinct = (pubkeys: string[]) => {
     return pubkeys.filter((pubkey, index, self) => {
         return index == self.indexOf(pubkey)
     })
