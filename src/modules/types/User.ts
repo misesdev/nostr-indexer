@@ -10,7 +10,4 @@ export type User = {
     lud06?: string;
     lud16?: string;
     zapService?: string;
-    ref_count: number;
-    created_at?: Date;
-    updated_at?: Date;
 }

@@ -1,4 +1,5 @@
 import { NostrEvent } from "./modules/types/NostrEvent";
+import { User } from "./modules/types/User";
 
 export const getPubkeys = (event: NostrEvent): string[] => {
     let pubkeys = event.tags.map((tag: any) => { 
@@ -13,14 +14,23 @@ export const getPubkeys = (event: NostrEvent): string[] => {
         } 
         return tag[1];
     });
-
-    return pubkeys.filter((f: string) => f != null)
+    return pubkeys.filter((f: string) => {
+        return f != null && f?.length == 64
+    })
 }
 
 export const distinctEvent = (events: NostrEvent[]) => {
     return events.filter((event, index, self) => {
         return index == self.findIndex(x => x.id == event.id)
     })
+}
+
+export const distinctUsers = (users: User[]): User[] => {
+    const seen = new Map<string, User>();
+    for (const user of users) {
+        seen.set(user.pubkey, user);
+    }
+    return Array.from(seen.values());
 }
 
 export const distinct = (pubkeys: string[]) => {

@@ -28,8 +28,7 @@ class DBUsers
 
         const columns = [
             "pubkey", "name", "display_name", "picture", "about",
-            "banner", "website", "nip05", "lud06", "lud16", "zapService",
-            "ref_count", "created_at", "updated_at" 
+            "banner", "website", "nip05", "lud06", "lud16", "zap_service" 
         ];
         const values: any[] = [];
         const placeholders: string[] = [];
@@ -50,9 +49,6 @@ class DBUsers
                 user.lud06 ?? null,
                 user.lud16 ?? null,
                 user.zapService ?? null,
-                user.ref_count ?? 1,
-                user.created_at ?? new Date(),
-                user.updated_at ?? new Date()
             )
         })
         const query = `
@@ -69,9 +65,7 @@ class DBUsers
                 nip05 = EXCLUDED.nip05,
                 lud06 = EXCLUDED.lud06,
                 lud16 = EXCLUDED.lud16,
-                "zapService" = EXCLUDED."zapService",
-                updated_at = EXCLUDED.updated_at,
-                ref_count = users.ref_count + 1
+                zap_service = EXCLUDED.zap_service
         `;
         await this._db.exec(query, values);
     }

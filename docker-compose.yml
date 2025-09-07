@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    container_name: nostr-indexer
+    network_mode: host
+    restart: unless-stopped

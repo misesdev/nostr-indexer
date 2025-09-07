@@ -7,12 +7,14 @@
         "ws": "^8.18.0"
     },
     "scripts": {
-        "dev": "tsc && node ./build/index.js",
+        "start": "node ./dist/main.js",
+        "dev": "ts-node-dev --respawn ./src/main.ts",
         "build": "tsc"
     },
     "dependencies": {
         "axios": "^1.11.0",
         "dotenv": "^16.4.5",
+        "node-cron": "^4.2.1",
         "pg": "^8.16.3"
     }
 }
